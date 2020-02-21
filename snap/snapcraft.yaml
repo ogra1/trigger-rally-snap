@@ -1,4 +1,4 @@
-name: trigger-rally
+name: trigger-rally-ogra
 base: core18
 adopt-info: trigger-rally
 summary: 3D rally simulation with a great physics engine
