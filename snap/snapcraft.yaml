@@ -1,6 +1,6 @@
 name: trigger-rally
 base: core18
-version: '0.1'
+adopt-info: trigger-rally
 summary: 3D rally simulation with a great physics engine
 description: |
   A 3D rally simulation with a great physics engine for drifting,
@@ -46,6 +46,8 @@ parts:
       make install
       sed "s/\/usr/\/snap\/$SNAPCRAFT_PROJECT_NAME\/current\/usr/g" -i \
            $SNAPCRAFT_PART_INSTALL/usr/games/trigger-rally.config.defs
+      # set version
+      snapcraftctl set-version "$(grep ^DISTVER GNUmakefile|sed 's/^.*= //')"
     build-packages:
       - libgl1-mesa-dev
       - libglu1-mesa-dev
