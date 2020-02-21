@@ -1,0 +1,109 @@
+name: trigger-rally
+base: core18
+version: '0.1'
+summary: 3D rally simulation with a great physics engine
+description: |
+  A 3D rally simulation with a great physics engine for drifting,
+  over 200 maps, different terrain materials like dirt, asphalt, sand,
+  ice etc. and various weather, light and fog conditions give this
+  rally simulation the edge over many other free games. You need to
+  make it through the maps in often tight time limits and can further
+  improve by beating the recorded high scores. All attached single
+  races must be finished in time in order to win an event, unlocking
+  additional events and cars. Most maps are equipped with spoken
+  co-driver notes and co-driver icons.
+
+grade: stable
+confinement: strict
+
+apps:
+  trigger-rally:
+    command: desktop-launch $SNAP/usr/games/trigger-rally
+    environment:
+      LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/usr/lib/pulseaudio
+    plugs:
+      - audio-playback
+      - desktop
+      - joystick
+      - opengl
+      - x11
+
+parts:
+  tinyxml2:
+    source: https://github.com/leethomason/tinyxml2.git
+    plugin: cmake
+  trigger-rally:
+    source: https://svn.code.sf.net/p/trigger-rally/code
+    source-type: svn
+    plugin: make
+    after: [ tinyxml2 ]
+    override-build: |
+      export DESTDIR=$SNAPCRAFT_PART_INSTALL
+      export prefix=/usr
+      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/applications
+      cd src
+      make
+      make install
+      sed "s/\/usr/\/snap\/$SNAPCRAFT_PROJECT_NAME\/current\/usr/g" -i \
+           $SNAPCRAFT_PART_INSTALL/usr/games/trigger-rally.config.defs
+    build-packages:
+      - libgl1-mesa-dev
+      - libglu1-mesa-dev
+      - libglew-dev
+      - libopenal-dev
+      - libalut-dev
+      - libphysfs-dev
+      - libsdl2-dev
+      - libsdl2-image-dev
+      - subversion
+    stage-packages:
+      - libalut0
+      - libasound2
+      - libasyncns0
+      - libflac8
+      - libgl1
+      - libglew2.0
+      - libglu1-mesa
+      - libglvnd0
+      - libglx0
+      - libjbig0
+      - libjpeg-turbo8
+      - libmirclient9
+      - libogg0
+      - libopenal1
+      - libphysfs1
+      - libpng16-16
+      - libpulse0
+      - libsdl2-2.0-0
+      - libsdl2-image-2.0-0
+      - libsndfile1
+      - libsndio6.1
+      - libtiff5
+      - libvorbis0a
+      - libvorbisenc2
+      - libwayland-client0
+      - libwayland-cursor0
+      - libwayland-egl1
+      - libwebp6
+      - libx11-6
+      - libxau6
+      - libxcb1
+      - libxcursor1
+      - libxdmcp6
+      - libxext6
+      - libxfixes3
+      - libxi6
+      - libxinerama1
+      - libxkbcommon0
+      - libxrandr2
+      - libxrender1
+      - libxss1
+      - libxxf86vm1
+  glib-only:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: glib-only
+    plugin: make
+    build-packages:
+      - libglib2.0-dev
+    stage-packages:
+      - libglib2.0-bin
