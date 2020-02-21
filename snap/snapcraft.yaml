@@ -17,15 +17,19 @@ grade: stable
 confinement: strict
 
 apps:
-  trigger-rally:
+  trigger-rally-ogra:
     command: desktop-launch $SNAP/usr/games/trigger-rally
     environment:
       LD_LIBRARY_PATH: $LD_LIBRARY_PATH:$SNAP/usr/lib/pulseaudio
     plugs:
       - audio-playback
       - desktop
+      - home
       - joystick
+      - network
+      - network-bind
       - opengl
+      - unity7
       - x11
 
 parts:
@@ -105,6 +109,10 @@ parts:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
     source-subdir: glib-only
     plugin: make
+    override-prime: |
+      snapcraftctl prime
+      # fix nvidia driver handling
+      sed 's;^export LIBGL_DRIVERS_PATH.*;if \[ -e "/var/lib/snapd/lib/gl/xorg/nvidia_drv.so" \]\; then\n  export LIBGL_DRIVERS_PATH=/var/lib/snapd/lib/gl/xorg\n  export LD_LIBRARY_PATH=/var/lib/snapd/lib/gl:$LD_LIBRARY_PATH\nelse\n  export LIBGL_DRIVERS_PATH=$SNAP/usr/lib/$ARCH/dri\nfi;' -i bin/desktop-launch
     build-packages:
       - libglib2.0-dev
     stage-packages:
