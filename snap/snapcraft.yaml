@@ -32,6 +32,10 @@ apps:
       - unity7
       - x11
 
+layout:
+  /etc/openal/alsoft.conf:
+    bind-file: $SNAP/etc/openal/alsoft.conf
+
 parts:
   tinyxml2:
     source: https://github.com/leethomason/tinyxml2.git
@@ -44,6 +48,7 @@ parts:
     override-build: |
       export DESTDIR=$SNAPCRAFT_PART_INSTALL
       export prefix=/usr
+      export OPTIMS='-march=x86-64 -mtune=generic -O2'
       mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/applications
       cd src
       make
@@ -51,7 +56,8 @@ parts:
       sed "s/\/usr/\/snap\/$SNAPCRAFT_PROJECT_NAME\/current\/usr/g" -i \
            $SNAPCRAFT_PART_INSTALL/usr/games/trigger-rally.config.defs
       # set version
-      snapcraftctl set-version "$(grep ^DISTVER GNUmakefile|sed 's/^.*= //')"
+      COMMIT="$(svn log|grep -v ^- 2>/dev/null|head -1|sed 's/ |.*$//')"
+      snapcraftctl set-version "$(grep ^DISTVER GNUmakefile|sed 's/^.*= //')-${COMMIT}"
     build-packages:
       - libgl1-mesa-dev
       - libglu1-mesa-dev
